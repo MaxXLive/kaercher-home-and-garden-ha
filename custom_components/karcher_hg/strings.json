@@ -1,0 +1,44 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Kärcher Home & Garden",
+        "description": "Refresh-Token aus der Kärcher-App eintragen (Capture via mitm). Vollständiger OAuth-Login folgt später.",
+        "data": {
+          "refresh_token": "Cognito Refresh-Token"
+        }
+      }
+    },
+    "error": {
+      "invalid_auth": "Token ungültig oder abgelaufen."
+    },
+    "abort": {
+      "already_configured": "Account bereits eingerichtet."
+    }
+  },
+  "entity": {
+    "sensor": {
+      "battery": { "name": "Akku" },
+      "hepa_filter": { "name": "HEPA-Filter" },
+      "main_brush": { "name": "Hauptbürste" },
+      "side_brush": { "name": "Seitenbürste" },
+      "mop": { "name": "Wischmopp" },
+      "cleaning_time": { "name": "Reinigungszeit" },
+      "cleaning_area": { "name": "Reinigungsfläche" },
+      "wifi_rssi": { "name": "WLAN-Signal" },
+      "firmware": { "name": "Firmware" },
+      "fault_code": { "name": "Fehlercode" }
+    },
+    "binary_sensor": {
+      "online": { "name": "Online" },
+      "fault": { "name": "Störung" },
+      "provisioned": { "name": "Provisioniert" }
+    },
+    "vacuum": {
+      "robot": { "name": "Saugroboter" }
+    },
+    "camera": {
+      "map": { "name": "Grundriss" }
+    }
+  }
+}

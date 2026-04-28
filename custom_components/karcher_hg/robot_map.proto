@@ -1,0 +1,225 @@
+syntax = "proto2";
+
+message DeviceCleanExtraInfo {
+  optional uint32 field1 = 1;
+  optional bytes field2 = 2;
+  optional uint32 field3 = 3;
+  optional uint32 field4 = 4;
+  optional uint32 field5 = 5;
+  optional uint32 field6 = 6;
+  optional uint32 field8 = 8;
+}
+
+message DeviceCleanTaskInfo {
+  optional uint32 field1 = 1;
+  optional uint32 field2 = 2;
+  optional uint32 field3 = 3;
+  optional uint32 field4 = 4;
+  optional uint32 field5 = 5;
+  optional uint32 field6 = 6;
+  optional uint32 field7 = 7;
+  optional uint32 field8 = 8;
+  optional uint32 field9 = 9;
+  optional string field10 = 10;
+  optional bytes field11 = 11;
+  optional DeviceCleanExtraInfo extra_info = 12;
+}
+
+message DeviceCleanResult {
+  required DeviceCleanTaskInfo task_info = 1;
+  required bytes clean_map = 2;
+}
+
+message MapBoundaryInfo {
+  required string mapMd5 = 1;
+  required uint32 vMinX = 2;
+  required uint32 vMaxX = 3;
+  required uint32 vMinY = 4;
+  required uint32 vMaxY = 5;
+}
+
+message MapExtInfo {
+  required uint32 taskBeginDate = 1;
+  required uint32 mapUploadDate = 2;
+  optional uint32 mapValid = 3;
+  optional uint32 radian = 4;
+  optional uint32 force = 5;
+  optional uint32 cleanPath = 6;
+  optional MapBoundaryInfo boundaryInfo = 7;
+  optional uint32 mapVersion = 8;
+  optional uint32 mapValueType = 9;
+  optional uint32 parsing_method = 10;
+}
+
+message MapHeadInfo {
+  required uint32 mapHeadId = 1;
+  required uint32 sizeX = 2;
+  required uint32 sizeY = 3;
+  required float minX = 4;
+  required float minY = 5;
+  required float maxX = 6;
+  required float maxY = 7;
+  required float resolution = 8;
+}
+
+message MapDataInfo {
+  // data length = sizeX * sizeY, each byte:
+  // -1 = wall, 0 = background, 1 = discover, 2 = cover, 3 = deepCover
+  // 10-59 = room id, 60-109 = room id with cover, -109 to -60 = room id with deep cover
+  required bytes mapData = 1;
+}
+
+message AllMapInfo {
+  required uint32 mapHeadId = 1;
+  required string mapName = 2;
+  optional uint32 force = 3;
+}
+
+message DeviceHistoryPoseInfo {
+  required uint32 poseId = 1;
+  repeated DeviceCoverPointDataInfo points = 2;
+}
+
+message DeviceCoverPointDataInfo {
+  required uint32 update = 1;
+  required float x = 2;
+  required float y = 3;
+}
+
+message ThreeRoomInfo {
+  required uint32 roomId = 1;
+  repeated ThreeLineInfo lines = 2;
+}
+
+message DevicePoseDataInfo {
+  required float x = 1;
+  required float y = 2;
+  required float phi = 3;
+}
+
+message DeviceCurrentPoseInfo {
+  required uint32 poseId = 1;
+  required uint32 update = 2;
+  required float x = 3;
+  required float y = 4;
+  required float phi = 5;
+}
+
+message DeviceAreaDataInfo {
+  required uint32 status = 1;
+  required uint32 type = 2;
+  optional uint32 areaIndex = 3;
+  repeated DevicePointInfo points = 4;
+}
+
+message DeviceNavigationPointDataInfo {
+  required uint32 pointId = 1;
+  required uint32 status = 2;
+  required uint32 pointType = 3;
+  required float x = 4;
+  required float y = 5;
+  optional float phi = 6;
+}
+
+message RoomDataInfo {
+  required uint32 roomId = 1;
+  required string roomName = 2;
+  optional uint32 roomTypeId = 3;
+  optional uint32 meterialId = 4;
+  required uint32 cleanState = 5;
+  optional uint32 roomClean = 6;
+  optional uint32 roomCleanIndex = 7;
+  required DevicePointInfo roomNamePost = 8;
+  optional CleanPerferenceDataInfo cleanPerfer = 9;
+  optional uint32 colorId = 10;
+}
+
+message CleanPerferenceDataInfo {
+  required uint32 cleanMode = 1;
+  required uint32 waterLevel = 2;
+  required uint32 windPower = 3;
+  required uint32 twiceClean = 4;
+  optional uint32 carpet = 5;
+}
+
+message DevicePointInfo {
+  required float x = 1;
+  required float y = 2;
+}
+
+message DeviceRoomMatrix {
+  required bytes matrix = 1;
+}
+
+message DeviceRoomChainDataInfo {
+  required uint32 roomId = 1;
+  repeated DeviceChainPointDataInfo points = 2;
+}
+
+message DeviceChainPointDataInfo {
+  required uint32 x = 1;
+  required uint32 y = 2;
+  required int32 value = 3;
+}
+
+message ObjectDataInfo {
+  required uint32 objectId = 1;
+  required uint32 objectTypeId = 2;
+  required string objectName = 3;
+  optional uint32 confirm = 4;
+  required float x = 5;
+  required float y = 6;
+  optional string url = 7;
+}
+
+message FurnitureDataInfo {
+  required uint32 id = 1;
+  required uint32 typeId = 2;
+  repeated DevicePointInfo points = 3;
+  optional string url = 4;
+  optional uint32 status = 5;
+  repeated DevicePointInfo react = 6;
+}
+
+message ThreeLineInfo {
+  required uint32 type = 1;
+  required DevicePointInfo begin = 2;
+  required DevicePointInfo end = 3;
+  required uint32 updateType = 4;
+  optional DevicePointInfo originBegin = 5;
+  optional DevicePointInfo originEnd = 6;
+}
+
+message ThreeInfo {
+  repeated ThreeRoomInfo rooms = 1;
+}
+
+message HouseInfo {
+  required uint32 id = 1;
+  required string name = 2;
+  required uint32 cur_map_count = 3;
+  required uint32 max_map_size = 4;
+  repeated AllMapInfo maps = 5;
+}
+
+message RobotMap {
+  required uint32 mapType = 1;
+  required MapExtInfo mapExtInfo = 2;
+  optional MapHeadInfo mapHead = 3;
+  optional MapDataInfo mapData = 4;
+  repeated AllMapInfo mapInfo = 5;
+  optional DeviceHistoryPoseInfo historyPose = 6;
+  optional DevicePoseDataInfo chargeStation = 7;
+  optional DeviceCurrentPoseInfo currentPose = 8;
+  repeated DeviceAreaDataInfo virtualWalls = 9;
+  repeated DeviceAreaDataInfo areasInfo = 10;
+  repeated DeviceNavigationPointDataInfo navigationPoints = 11;
+  repeated RoomDataInfo roomDataInfo = 12;
+  optional DeviceRoomMatrix roomMatrix = 13;
+  repeated DeviceRoomChainDataInfo roomChain = 14;
+  repeated ObjectDataInfo objects = 15;
+  repeated FurnitureDataInfo furnitureInfo = 16;
+  repeated HouseInfo houseInfos = 17;
+  repeated DeviceAreaDataInfo backupAreas = 18;
+  optional ThreeInfo threeInfo = 19;
+}
