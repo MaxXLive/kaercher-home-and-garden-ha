@@ -52,7 +52,8 @@ class KarcherDevice:
     cleaning_area: int | None = None  # m²
 
     # ── state shadow ──
-    status: int | None = None  # 0=idle, 1=cleaning, 2=paused, …
+    status: int | None = None  # 0=sleep,1=standBy,2=pause,3=recharging,4=charging,5=sweeping,6=sweepMop,7=mopping,8=upgrading,9=cleaning,10=airDrying,11=dustCollecting,12=buildingMap,13=cuttingHair
+    work_mode: int | None = None  # 0=idle,1=auto,5=backCharge,25=border,45=explore,...
     fault: int | None = None  # 0=no fault
     wind: int | None = None  # suction level
     water: int | None = None  # mop water level
@@ -157,6 +158,7 @@ class KarcherCoordinator(DataUpdateCoordinator[dict[str, KarcherDevice]]):
         dev.wind = st.get("wind")
         dev.water = st.get("water")
         dev.mode = st.get("mode")
+        dev.work_mode = st.get("work_mode")
         dev.charge_state = st.get("charge_state")
         dev.tank_state = st.get("tank_state")
         dev.cloth_state = st.get("cloth_state")

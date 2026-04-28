@@ -78,19 +78,27 @@ class KarcherVacuum(KarcherEntity, StateVacuumEntity):
         if not d.is_online:
             return VacuumActivity.IDLE
 
-        # state.status: 0=idle, 1=cleaning, 2=paused, 3=charging(?), 5=exploring(?)
-        # state.fault: 0=ok, >0=error
-        # state.charge_state: 0=not charging, >0=charging
+        # RobotStatus enum (from decompiled app):
+        #  0=sleep, 1=standBy, 2=pause, 3=recharging, 4=charging,
+        #  5=sweeping, 6=sweepingAndMopping, 7=mopping, 8=upgrading,
+        #  9=cleaning, 10=airDrying, 11=dustCollecting, 12=buildingMap, 13=cuttingHair
         if d.fault and d.fault != 0:
             return VacuumActivity.ERROR
-        if d.status == 1:
+        s = d.status
+        if s in (5, 6, 7, 9, 12, 13):  # sweeping/sweepMop/mopping/cleaning/buildingMap/cuttingHair
             return VacuumActivity.CLEANING
-        if d.status == 2:
+        if s == 2:  # pause
             return VacuumActivity.PAUSED
-        if d.charge_state and d.charge_state != 0:
+        if s == 3:  # recharging (returning to dock)
+            return VacuumActivity.RETURNING
+        if s in (4, 10, 11):  # charging/airDrying/dustCollecting
             return VacuumActivity.DOCKED
-        if d.status == 0:
+        if s in (0, 1):  # sleep/standBy
+            if d.charge_state and d.charge_state != 0:
+                return VacuumActivity.DOCKED
             return VacuumActivity.IDLE
+        if s == 8:  # upgrading
+            return VacuumActivity.DOCKED
         return VacuumActivity.IDLE
 
     @property
@@ -109,6 +117,12 @@ class KarcherVacuum(KarcherEntity, StateVacuumEntity):
             attrs["tank_state"] = d.tank_state
         if d.cloth_state is not None:
             attrs["cloth_state"] = d.cloth_state
+        if d.status is not None:
+            attrs["raw_status"] = d.status
+        if d.work_mode is not None:
+            attrs["work_mode"] = d.work_mode
+        if d.charge_state is not None:
+            attrs["charge_state"] = d.charge_state
         return attrs
 
     # ── Commands (verified payloads from MITM capture) ──
