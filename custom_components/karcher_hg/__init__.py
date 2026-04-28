@@ -6,6 +6,7 @@ import logging
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import Platform
 from homeassistant.core import HomeAssistant
+from homeassistant.exceptions import ConfigEntryAuthFailed
 from homeassistant.helpers import device_registry as dr
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 
@@ -31,12 +32,28 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     auth = KarcherAuth(session, entry.data[CONF_REFRESH_TOKEN])
 
     # Eager: refresh once so config validates and we get a stable refresh_token
-    await auth.get_id_token()
+    try:
+        await auth.get_id_token()
+    except RuntimeError as err:
+        if "NotAuthorizedException" in str(err) or "invalid" in str(err).lower():
+            raise ConfigEntryAuthFailed(
+                "Refresh token expired or invalid — re-authenticate"
+            ) from err
+        raise
+
     new_rt = await auth.get_refresh_token()
     if new_rt != entry.data[CONF_REFRESH_TOKEN]:
         hass.config_entries.async_update_entry(
             entry, data={**entry.data, CONF_REFRESH_TOKEN: new_rt}
         )
+
+    # Persist rotated refresh tokens on every future Cognito refresh
+    def _persist_rotated_token(new_token: str) -> None:
+        hass.config_entries.async_update_entry(
+            entry, data={**entry.data, CONF_REFRESH_TOKEN: new_token}
+        )
+
+    auth.set_token_rotated_callback(_persist_rotated_token)
 
     api = KarcherAPI(session, auth)
     iot = KarcherIoT(session, auth)

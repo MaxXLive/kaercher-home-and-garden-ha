@@ -7,13 +7,21 @@
         "data": {
           "refresh_token": "Cognito Refresh-Token"
         }
+      },
+      "reauth_confirm": {
+        "title": "Erneut authentifizieren",
+        "description": "Dein Refresh-Token ist abgelaufen. Bitte neuen Token eintragen.",
+        "data": {
+          "refresh_token": "Neuer Cognito Refresh-Token"
+        }
       }
     },
     "error": {
       "invalid_auth": "Token ungültig oder abgelaufen."
     },
     "abort": {
-      "already_configured": "Account bereits eingerichtet."
+      "already_configured": "Account bereits eingerichtet.",
+      "reauth_successful": "Authentifizierung erfolgreich erneuert."
     }
   },
   "entity": {

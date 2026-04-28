@@ -56,6 +56,11 @@ class KarcherAuth:
         self._aws: Optional[AwsCreds] = None
         self._identity_id: Optional[str] = None
         self._initial_refresh_token = refresh_token
+        self._on_token_rotated: Optional[callable] = None
+
+    def set_token_rotated_callback(self, callback: callable) -> None:
+        """Register callback for when Cognito returns a new refresh token."""
+        self._on_token_rotated = callback
 
     async def _refresh_idp_tokens(self) -> CognitoTokens:
         """Exchange refresh_token for fresh id+access tokens via Cognito IdP."""
@@ -75,7 +80,7 @@ class KarcherAuth:
         auth = data.get("AuthenticationResult") or {}
         id_token = auth["IdToken"]
         access_token = auth["AccessToken"]
-        # Cognito IdP refresh does not always return new refresh_token; keep old
+        # Cognito may return a rotated refresh_token; persist if so
         new_refresh = auth.get("RefreshToken") or rt
         expires_in = auth.get("ExpiresIn", 3600)
         self._tokens = CognitoTokens(
@@ -84,6 +89,9 @@ class KarcherAuth:
             refresh_token=new_refresh,
             expires_at=time.time() + expires_in,
         )
+        if new_refresh != rt and self._on_token_rotated:
+            _LOGGER.info("Cognito returned rotated refresh token — persisting")
+            self._on_token_rotated(new_refresh)
         return self._tokens
 
     async def get_id_token(self) -> str:
