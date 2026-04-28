@@ -1,0 +1,44 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Kärcher Home & Garden",
+        "description": "Paste the Cognito refresh token from the Kärcher app (captured via MITM).",
+        "data": {
+          "refresh_token": "Cognito Refresh Token"
+        }
+      }
+    },
+    "error": {
+      "invalid_auth": "Token invalid or expired."
+    },
+    "abort": {
+      "already_configured": "Account already configured."
+    }
+  },
+  "entity": {
+    "sensor": {
+      "battery": { "name": "Battery" },
+      "hepa_filter": { "name": "HEPA filter" },
+      "main_brush": { "name": "Main brush" },
+      "side_brush": { "name": "Side brush" },
+      "mop": { "name": "Mop" },
+      "cleaning_time": { "name": "Cleaning time" },
+      "cleaning_area": { "name": "Cleaning area" },
+      "wifi_rssi": { "name": "Wi-Fi signal" },
+      "firmware": { "name": "Firmware" },
+      "fault_code": { "name": "Fault code" }
+    },
+    "binary_sensor": {
+      "online": { "name": "Connectivity" },
+      "fault": { "name": "Problem" },
+      "provisioned": { "name": "Provisioned" }
+    },
+    "vacuum": {
+      "robot": { "name": "Robot vacuum" }
+    },
+    "camera": {
+      "map": { "name": "Map" }
+    }
+  }
+}
