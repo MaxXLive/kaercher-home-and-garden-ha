@@ -22,7 +22,7 @@ Custom component for Home Assistant. Connects to Kärcher's IoT cloud (`api.iot.
 - Fetched via REST/S3, rendered as PNG
 
 ## Install (HACS)
-1. HACS → ⋮ → Custom repositories → URL: `https://github.com/MERMACK/karcher-hg-ha` → Category: Integration
+1. HACS → ⋮ → Custom repositories → URL: `https://github.com/MaxXLive/kaercher-home-and-garden-ha` → Category: Integration
 2. Search "Kärcher" in HACS → Download
 3. Restart HA
 4. Settings → Devices & Services → Add Integration → Kärcher Home & Garden
