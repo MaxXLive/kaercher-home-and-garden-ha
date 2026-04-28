@@ -69,7 +69,7 @@ class KarcherAuth:
             "content-type": "application/x-amz-json-1.1",
         }
         async with self._session.post(COGNITO_IDP_URL, json=body, headers=headers) as resp:
-            data = await resp.json()
+            data = await resp.json(content_type=None)
             if resp.status != 200:
                 raise RuntimeError(f"Cognito IdP refresh failed: {resp.status} {data}")
         auth = data.get("AuthenticationResult") or {}
@@ -108,7 +108,7 @@ class KarcherAuth:
             "content-type": "application/x-amz-json-1.1",
         }
         async with self._session.post(COGNITO_IDENTITY_URL, json=body, headers=headers) as resp:
-            data = await resp.json()
+            data = await resp.json(content_type=None)
             if resp.status != 200:
                 raise RuntimeError(f"Cognito GetId failed: {resp.status} {data}")
         self._identity_id = data["IdentityId"]
@@ -129,7 +129,7 @@ class KarcherAuth:
             "content-type": "application/x-amz-json-1.1",
         }
         async with self._session.post(COGNITO_IDENTITY_URL, json=body, headers=headers) as resp:
-            data = await resp.json()
+            data = await resp.json(content_type=None)
             if resp.status != 200:
                 raise RuntimeError(f"GetCredentialsForIdentity failed: {resp.status} {data}")
         creds = data["Credentials"]
