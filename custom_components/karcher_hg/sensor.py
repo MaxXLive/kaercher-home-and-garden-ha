@@ -16,7 +16,7 @@ from homeassistant.const import PERCENTAGE, EntityCategory, UnitOfTime
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
-from .const import DOMAIN
+from .const import DOMAIN, decode_fault
 from .coordinator import KarcherCoordinator, KarcherDevice
 from .entity import KarcherEntity
 
@@ -104,7 +104,7 @@ SENSORS: tuple[KarcherSensorDesc, ...] = (
         key="fault_code",
         translation_key="fault_code",
         entity_category=EntityCategory.DIAGNOSTIC,
-        value=lambda d: d.fault if d.fault and d.fault != 0 else None,
+        value=lambda d: decode_fault(d.fault)[0] if d.fault and d.fault != 0 else "Kein Fehler",
     ),
 )
 
@@ -134,3 +134,14 @@ class KarcherSensor(KarcherEntity, SensorEntity):
     def native_value(self) -> Any:
         d = self.device
         return self.entity_description.value(d) if d else None
+
+    @property
+    def extra_state_attributes(self) -> dict[str, Any] | None:
+        if self.entity_description.key != "fault_code":
+            return None
+        d = self.device
+        if not d:
+            return None
+        code = d.fault if d.fault else 0
+        _, blocking = decode_fault(d.fault)
+        return {"raw_code": code, "blocking": blocking}

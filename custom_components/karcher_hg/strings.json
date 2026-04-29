@@ -3,21 +3,53 @@
     "step": {
       "user": {
         "title": "Kärcher Home & Garden",
-        "description": "Refresh-Token aus der Kärcher-App eintragen (Capture via mitm). Vollständiger OAuth-Login folgt später.",
+        "description": "Wie möchtest du dich anmelden?",
+        "menu_options": {
+          "browser": "Im Browser einloggen (empfohlen)",
+          "token": "Refresh-Token einfügen (Fallback)"
+        }
+      },
+      "browser": {
+        "title": "Browser-Login",
+        "description": "**⚠️ Öffne diesen Link im Desktop-Browser, NICHT am Handy!** (Am Handy öffnet sich die Kärcher-App statt des Browsers)\n\n1. [Login-Seite öffnen]({auth_url})\n2. Einloggen und Captcha lösen\n3. Nach dem Login zeigt der Browser eine Fehlermeldung — **das ist normal!**\n4. Kopiere die **komplette URL** aus der Adressleiste (beginnt mit `com.kaercher.consumer.devicesapp://`)\n5. Hier einfügen:",
+        "data": {
+          "callback_url": "Callback-URL aus der Adressleiste"
+        }
+      },
+      "token": {
+        "title": "Token einfügen",
+        "description": "Refresh-Token aus der Kärcher-App eintragen (via mitmproxy oder Browser-DevTools).",
         "data": {
           "refresh_token": "Cognito Refresh-Token"
         }
       },
       "reauth_confirm": {
         "title": "Erneut authentifizieren",
-        "description": "Dein Refresh-Token ist abgelaufen. Bitte neuen Token eintragen.",
+        "description": "Dein Token ist abgelaufen. Wie möchtest du dich neu anmelden?",
+        "menu_options": {
+          "reauth_browser": "Im Browser einloggen",
+          "reauth_token": "Neuen Token einfügen"
+        }
+      },
+      "reauth_browser": {
+        "title": "Erneut anmelden (Browser)",
+        "description": "**⚠️ Desktop-Browser nutzen, NICHT am Handy!**\n\n1. [Login-Seite öffnen]({auth_url})\n2. Einloggen und Captcha lösen\n3. URL aus der Adressleiste kopieren (beginnt mit `com.kaercher.consumer.devicesapp://`)\n4. Hier einfügen:",
+        "data": {
+          "callback_url": "Callback-URL aus der Adressleiste"
+        }
+      },
+      "reauth_token": {
+        "title": "Erneut authentifizieren",
+        "description": "Neuen Refresh-Token eintragen.",
         "data": {
           "refresh_token": "Neuer Cognito Refresh-Token"
         }
       }
     },
     "error": {
-      "invalid_auth": "Token ungültig oder abgelaufen."
+      "invalid_auth": "Token ungültig oder abgelaufen.",
+      "no_code": "Keine gültige Callback-URL. Bitte die komplette URL aus der Browser-Adressleiste kopieren.",
+      "token_exchange_failed": "Token-Tausch fehlgeschlagen. Bitte erneut einloggen (Code ist nur einmal gültig)."
     },
     "abort": {
       "already_configured": "Account bereits eingerichtet.",

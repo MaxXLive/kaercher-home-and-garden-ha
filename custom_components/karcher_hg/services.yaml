@@ -1,0 +1,59 @@
+clean_rooms:
+  name: Zimmer reinigen
+  description: Bestimmte Zimmer reinigen (optional mit Reinigungsmodus)
+  target:
+    entity:
+      domain: vacuum
+  fields:
+    room_ids:
+      name: Zimmer-IDs
+      description: Liste der Raum-IDs aus der Karte (z.B. 10, 12, 14)
+      required: true
+      example: "[10, 12]"
+      selector:
+        object:
+    sweep_type:
+      name: Reinigungsmodus
+      description: >
+        0 = Nur Saugen, 1 = Saugen & Wischen,
+        2 = Nur Wischen, 3 = Erst Saugen dann Wischen
+      required: false
+      selector:
+        select:
+          options:
+            - label: "Nur Saugen"
+              value: "0"
+            - label: "Saugen & Wischen"
+              value: "1"
+            - label: "Nur Wischen"
+              value: "2"
+            - label: "Erst Saugen, dann Wischen"
+              value: "3"
+
+set_sweep_type:
+  name: Reinigungsmodus setzen
+  description: >
+    Reinigungsmodus ändern ohne Reinigung zu starten.
+    0 = Nur Saugen, 1 = Saugen & Wischen,
+    2 = Nur Wischen, 3 = Erst Saugen dann Wischen
+  target:
+    entity:
+      domain: vacuum
+  fields:
+    sweep_type:
+      name: Reinigungsmodus
+      description: >
+        0 = Nur Saugen, 1 = Saugen & Wischen,
+        2 = Nur Wischen, 3 = Erst Saugen dann Wischen
+      required: true
+      selector:
+        select:
+          options:
+            - label: "Nur Saugen"
+              value: "0"
+            - label: "Saugen & Wischen"
+              value: "1"
+            - label: "Nur Wischen"
+              value: "2"
+            - label: "Erst Saugen, dann Wischen"
+              value: "3"

@@ -61,6 +61,7 @@ class KarcherDevice:
     charge_state: int | None = None
     tank_state: int | None = None
     cloth_state: int | None = None
+    sweep_type: int | None = None  # 0=vacuum,1=vacuum+mop,2=mop,3=vac-then-mop
     volume: int | None = None
 
     # ── maps shadow ──
@@ -162,6 +163,7 @@ class KarcherCoordinator(DataUpdateCoordinator[dict[str, KarcherDevice]]):
         dev.charge_state = st.get("charge_state")
         dev.tank_state = st.get("tank_state")
         dev.cloth_state = st.get("cloth_state")
+        dev.sweep_type = st.get("sweep_type")
         dev.volume = st.get("volume")
 
         # maps

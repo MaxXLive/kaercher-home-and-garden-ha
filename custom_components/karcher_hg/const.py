@@ -12,6 +12,9 @@ COGNITO_IDENTITY_POOL_ID = "eu-west-1:9338a823-bbf9-4218-be94-61caf9241999"
 IDP_NAME = "ak-oidc-ruds"
 AWS_REGION = "eu-west-1"
 OAUTH_REDIRECT_SCHEME = "com.kaercher.consumer.devicesapp"
+OAUTH_REDIRECT_URI = f"{OAUTH_REDIRECT_SCHEME}://"
+COGNITO_AUTHORIZE_URL = f"{COGNITO_HOSTED_BASE}/oauth2/authorize"
+COGNITO_TOKEN_URL = f"{COGNITO_HOSTED_BASE}/oauth2/token"
 
 # Kärcher REST API
 API_BASE = "https://api.iot.kaercher.com"
@@ -83,6 +86,12 @@ CTR_STOP = 0
 CTR_START = 1
 CTR_PAUSE = 2
 
+# sweep_type enum (cleaning mode — set via setPreference command)
+SWEEP_TYPE_VACUUM = 0       # nur saugen
+SWEEP_TYPE_VACUUM_MOP = 1   # saugen + wischen
+SWEEP_TYPE_MOP_ONLY = 2     # nur wischen
+SWEEP_TYPE_VAC_THEN_MOP = 3 # erst saugen, dann wischen
+
 # state.status values (from shadow)
 STATUS_IDLE = 0
 STATUS_CLEANING = 1
@@ -96,3 +105,73 @@ DIR_FORWARD = 1
 DIR_RIGHT = 2
 DIR_BACKWARD = 3
 DIR_LEFT = 4
+
+# ── Fault codes extracted from app v3.16.3 (decompiled Hermes bytecode) ──
+# type=banner → blocking error shown as persistent banner in app
+# type=snack  → transient notification, non-blocking
+FAULT_CODES: dict[int, tuple[str, str, bool]] = {
+    # (code): (key, description_DE, is_blocking)
+    0:    ("none", "Kein Fehler", False),
+    500:  ("lidarTimeout", "LIDAR-Timeout", True),
+    501:  ("robotWheelsLifted", "Roboterräder angehoben", True),
+    502:  ("lowBattery", "Niedriger Batteriestand", True),
+    503:  ("dustBinNotInstalled", "Mülleimer nicht installiert", True),
+    508:  ("robotStartOnSlope", "Roboter startete an Hang", True),
+    509:  ("cliffSensorBlocked", "Klippensensoren blockiert", True),
+    510:  ("collisionSensorAbnormal", "Kollisionssensor defekt", True),
+    511:  ("failedToReturnDock", "Rückkehr zum Dock fehlgeschlagen", True),
+    513:  ("navigationFailed", "Navigation fehlgeschlagen", True),
+    514:  ("escapeFailed", "Fluchtversuch gescheitert", True),
+    516:  ("highBatteryTemperature", "Hohe Batterietemperatur", True),
+    518:  ("insufficientBattery", "Akku zu schwach", True),
+    521:  ("waterTankNotInstalled", "Wassertank nicht installiert", True),
+    522:  ("moppingPadNotInstalled", "Wischpad nicht installiert", True),
+    525:  ("waterTankEmpty", "Wassertank leer", True),
+    531:  ("2in1WaterTankNotInstalled", "2-in-1-Wassertank nicht installiert", True),
+    533:  ("standbyTimeTooLong", "Standby-Zeit zu lang", True),
+    534:  ("deviceLowBattery", "Niedriger Akkustand, schaltet ab", True),
+    550:  ("batteryTemperatureAbnormal", "Batterietemperatur abnormal", True),
+    551:  ("batteryTemperatureNormal", "Batterietemperatur normal", False),
+    559:  ("mappingFailed", "Kartierung fehlgeschlagen", True),
+    560:  ("sideBrushAbnormal", "Seitenbürste abnormal", True),
+    561:  ("visionRecognitionSensor", "Bilderkennungssensor-Fehler", True),
+    562:  ("edgeInfraredSensor", "Kanten-Infrarotsensor abnormal", True),
+    563:  ("dustBinDetached", "Mülleimer abmontiert", True),
+    564:  ("2in1WaterTankDetached", "2-in-1-Wassertank abmontiert", True),
+    565:  ("lidarObstructed", "LIDAR blockiert", True),
+    566:  ("waterTankDetached", "Wassertank abmontiert", True),
+    567:  ("robotInRestrictedZone", "Roboter in Sperrzone", True),
+    568:  ("leftDriveWheel", "Linkes Antriebsrad abnormal", True),
+    569:  ("rightDriveWheel", "Rechtes Antriebsrad abnormal", True),
+    570:  ("mainBrushAbnormal", "Hauptbürste abnormal", True),
+    571:  ("mainBrushCutting", "Freischneidermesser blockiert", True),
+    572:  ("robotInRestrictedZone2", "Roboter in Sperrzone", True),
+    573:  ("fanAbnormal", "Ventilator abnormal", True),
+    574:  ("lidarTangled", "LIDAR verheddert/festgefahren", True),
+    580:  ("noWater", "Keine Wasserausgabe", False),  # snack
+    588:  ("robotOnCarpet", "Roboter auf Teppich", False),  # snack
+    589:  ("robotLocalizationFailure", "Lokalisierungsfehler (Station)", True),
+    611:  ("localizationFailure", "Lokalisierung fehlgeschlagen", True),
+    612:  ("mapChanged", "Karte geändert, neu zuordnen", True),
+    701:  ("surroundingObstacles", "Hindernisse in der Umgebung", True),
+    711:  ("dirtyWater", "Schmutzwassertank voll/fehlt", True),
+    712:  ("cleanWaterTank", "Frischwassertank niedrig/fehlt", True),
+    # 2xxx = non-blocking notifications (snack in app)
+    2007: ("pathPlanningFailed", "Pfadplanung fehlgeschlagen", False),
+    2012: ("areaUnreachable", "Gebiet nicht erreichbar", False),
+    2013: ("didNotStartFromStation", "Nicht an Station gestartet", False),
+    2014: ("carpetDetectionAbnormal", "Teppicherkennungsfehler", False),
+    2015: ("cleaningInProgress", "Reinigung läuft bereits", False),
+    2016: ("reMap", "Neuzuordnung nötig", False),
+    2114: ("cleanedFor15Hours", "15h gereinigt, Behälter leeren", False),
+}
+
+
+def decode_fault(code: int | None) -> tuple[str, bool]:
+    """Return (description, is_blocking) for a fault code."""
+    if code is None or code == 0:
+        return ("Kein Fehler", False)
+    entry = FAULT_CODES.get(code)
+    if entry:
+        return (entry[1], entry[2])
+    return (f"Unbekannter Fehler ({code})", code < 2000)

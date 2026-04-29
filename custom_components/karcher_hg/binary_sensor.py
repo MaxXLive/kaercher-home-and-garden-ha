@@ -15,7 +15,7 @@ from homeassistant.const import EntityCategory
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
-from .const import DOMAIN
+from .const import DOMAIN, decode_fault
 from .coordinator import KarcherCoordinator, KarcherDevice
 from .entity import KarcherEntity
 
@@ -36,7 +36,7 @@ BINARY_SENSORS: tuple[KarcherBinaryDesc, ...] = (
         key="fault",
         translation_key="fault",
         device_class=BinarySensorDeviceClass.PROBLEM,
-        value=lambda d: bool(d.fault) if d.fault is not None else None,
+        value=lambda d: decode_fault(d.fault)[1] if d.fault is not None else None,
     ),
     KarcherBinaryDesc(
         key="provisioned",
