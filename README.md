@@ -34,10 +34,23 @@ Custom component for Home Assistant. Connects to Kärcher's IoT cloud (`api.iot.
 3. Add integration, paste refresh token.
 
 ## Refresh-token extraction
-mitmproxy on the running Kärcher app, look for:
+
+### Option 1: Desktop-Script (empfohlen — kein Root/MITM nötig)
+
+```bash
+python3 tools/token_requester.py
+```
+
+Öffnet die Kärcher-Login-Seite im Browser (PKCE-Flow). Nach dem Login + Captcha:
+1. Browser versucht zur App zu redirecten → Fehlerseite am Desktop
+2. `?code=XXXX` aus der Adresszeile kopieren und im Terminal einfügen
+3. Script tauscht den Code gegen Tokens und kopiert den Refresh Token in die Zwischenablage
+
+### Option 2: MITM-Proxy (wenn Desktop-Script nicht geht)
+mitmproxy auf der laufenden Kärcher-App, suchen nach:
 `POST https://cognito-idp.eu-west-1.amazonaws.com/`
-with `x-amz-target: AWSCognitoIdentityProviderService.InitiateAuth`
-→ The `RefreshToken` from `AuthenticationResult` is what HA needs.
+mit `x-amz-target: AWSCognitoIdentityProviderService.InitiateAuth`
+→ Der `RefreshToken` aus `AuthenticationResult` ist was HA braucht.
 
 ## Architecture
 ```
